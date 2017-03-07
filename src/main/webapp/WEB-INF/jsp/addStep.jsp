@@ -30,7 +30,7 @@
 
             <div class="row">
                 <div class="col-xs-6 col-md-6 col-lg-6 col-md-6 ">
-                    <h2> Categories</h2>
+                    <h2> Category</h2>
                 </div>
                 <div class="col-xs-6 col-md-6 col-lg-6 col-md-6 ">
                     <textarea class="form-control" disabled rows="2" disabled id="category">${instruction.category.name}</textarea>
@@ -39,10 +39,10 @@
 
             <div class="row">
                 <div class="col-xs-6 col-md-6 col-lg-6 col-md-6 ">
-                    <h2> Category</h2>
+                    <h2> Youtube</h2>
                 </div>
                 <div class="col-xs-6 col-md-6 col-lg-6 col-md-6 ">
-                    <textarea class="form-control" disabled rows="2" disabled id="youtubeUrl">somelongbadlyreadableyoutubeurl</textarea>
+                    <textarea class="form-control" disabled rows="2" disabled id="youtubeUrl">${instruction.youtubeUrl}</textarea>
                 </div>
             </div>
 
@@ -59,7 +59,7 @@
 
         <div class="col-xs-4 col-md-4 col-lg-4 col-md-4  col-sm-offset-2 col-xs-offset-2 col-md-offset-2 col-lg-offset-2">
             <div class="thumbnail">
-                <img src="https://s.pinimg.com/images/user/default_280.png" alt="User name">
+                <img src="http://res.cloudinary.com/depejwdfb/image/upload/c_pad,h_200/${instruction.imageUrl}.jpg" alt="...">
             </div>
         </div>
     </div>
