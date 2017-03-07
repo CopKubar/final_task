@@ -5,10 +5,15 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.ui.context.ThemeSource;
+import org.springframework.ui.context.support.ResourceBundleThemeSource;
+import org.springframework.web.servlet.ThemeResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
+import org.springframework.web.servlet.theme.CookieThemeResolver;
+import org.springframework.web.servlet.theme.ThemeChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
@@ -46,6 +51,15 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
     }
 
     @Bean
+    public ThemeResolver themeResolver(){
+        CookieThemeResolver resolver = new CookieThemeResolver();
+        resolver.setCookieMaxAge(2400);
+        resolver.setCookieName("my-locale-cookie");
+        resolver.setDefaultThemeName("themeLight");
+        return resolver;
+    }
+
+    @Bean
     public CookieLocaleResolver localeResolver(){
         CookieLocaleResolver localeResolver = new CookieLocaleResolver();
         localeResolver.setDefaultLocale(Locale.ENGLISH);
@@ -61,6 +75,13 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
         return interceptor;
     }
 
+    @Bean
+    public ThemeChangeInterceptor themeChangeInterceptor(){
+        ThemeChangeInterceptor themeChangeInterceptor = new ThemeChangeInterceptor();
+        themeChangeInterceptor.setParamName("mytheme");
+        return themeChangeInterceptor;
+    }
+
 
 
     @Bean
@@ -74,6 +95,13 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
     }
 
     @Bean
+    public ThemeSource themeSource(){
+        ResourceBundleThemeSource source = new ResourceBundleThemeSource();
+        source.setBasenamePrefix("themes/theme-");
+        return source;
+    }
+
+    @Bean
     public PropertySourcesPlaceholderConfigurer propertyPlaceHolderConfigurer() {
         return new PropertySourcesPlaceholderConfigurer();
     }
@@ -81,5 +109,6 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
     @Override
     public void addInterceptors(InterceptorRegistry registry){
         registry.addInterceptor(localeChangeInterceptor());
+        registry.addInterceptor(themeChangeInterceptor());
     }
 }

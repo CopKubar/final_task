@@ -34,44 +34,53 @@ public class LikeServiceImpl implements LikeService{
 
     @Override
     public void Like(User user, Instruction instruction) {
-        Set<Like> likes = user.getLikes();
+        boolean changed=false;
+        Set<Like>likes=user.getLikes();
         for (Like like: likes){
             if (instruction.getLikes().contains(like)){
-                if (!like.getState()){
+                if (like.getState()){
+                    likeDao.delete(like);
+                    changed=true;
+                }else {
                     like.setState(true);
                     likeDao.saveAndFlush(like);
-                }else if (like.getState()){
-                    likeDao.delete(like);
+                    changed=true;
                 }
-            }else {
-                persistAllAboutLike(user, true, instruction);
             }
+        }
+        if (!changed){
+            persistAllAboutLike(user, true, instruction);
         }
     }
 
     @Override
     public void Dislike(User user, Instruction instruction) {
-        Set<Like> likes = user.getLikes();
+        boolean changed=false;
+        Set<Like>likes=user.getLikes();
         for (Like like: likes){
             if (instruction.getLikes().contains(like)){
-                if (!like.getState()){
-                    likeDao.delete(like);
-                }else if (like.getState()){
+                if (like.getState()){
                     like.setState(false);
                     likeDao.saveAndFlush(like);
+                    changed=true;
+                }else {
+                    likeDao.delete(like);
+                    changed=true;
                 }
-            }else {
-                persistAllAboutLike(user, false, instruction);
             }
+        }
+        if (!changed){
+            persistAllAboutLike(user, false, instruction);
         }
     }
 
     private void persistAllAboutLike(User user, boolean state, Instruction instruction){
-        Set<Like>likeSet=new HashSet<>();
-        likeSet.add(likeDao.saveAndFlush(new Like(user,state, instruction)));
-        user.setLikes(likeSet);
-        instruction.setLikes(likeSet);
+        Like like=likeDao.saveAndFlush(new Like(user, state, instruction));
+        Set<Like>userLikes=new HashSet<>();
+        userLikes.add(like);
+        user.setLikes(userLikes);
         userDao.saveAndFlush(user);
+        instruction.setLikes(userLikes);
         instructionDao.saveAndFlush(instruction);
     }
 

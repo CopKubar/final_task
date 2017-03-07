@@ -1,7 +1,6 @@
 package com.kubar.itransition.controller;
 
 import com.kubar.itransition.dao.BookDao;
-import com.kubar.itransition.dao.InstructionDao;
 import com.kubar.itransition.dto.UserDetailsDto;
 import com.kubar.itransition.model.Category;
 import com.kubar.itransition.model.Instruction;
@@ -28,9 +27,10 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @Controller
@@ -58,7 +58,7 @@ public class MainController {
     private InstructionService instructionService;
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public ModelAndView showStartPage() throws Exception {
+    public ModelAndView showStartPage(HttpSession session) throws Exception {
         //bookDao.indexBooks();
         for (Category category: categoryService.getAll()){
             System.out.println(category.getName());
@@ -66,32 +66,40 @@ public class MainController {
         return new ModelAndView("index","categories",categoryService.getAll());
     }
 
+    @RequestMapping(value = "/chooseTheme", method = RequestMethod.GET)
+    public ModelAndView chooseTheme(@RequestParam("theme")String theme, ServletContext context){
+        context.setAttribute("theme",theme);
+        return new ModelAndView("index");
+    }
+
     @RequestMapping(value = "/profile", method = RequestMethod.GET)
-    public ModelAndView AddInstruction(  ) {
+    public ModelAndView AddInstruction(HttpSession session) {
         ModelAndView modelAndView=new ModelAndView("/profile");
         modelAndView.addObject("categories", categoryService.getAll());
+        modelAndView.addObject("instruction", new Instruction());
+        session.setAttribute("theme", "dark");
         return modelAndView;
     }
 
 
-    @RequestMapping(value = "/addInstruction", method = RequestMethod.POST)
-    public ModelAndView AddInstruction(@RequestParam String title,@RequestParam String youtubeUrl,@RequestParam String category) {
-        System.out.println(title);
-        System.out.println(youtubeUrl);
-        System.out.println(category);
-        UserDetailsDto userDetailsDto =(UserDetailsDto) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Instruction instruction = new Instruction();
-        instruction.setTitle(title);
-        instruction.setYoutubeUrl(youtubeUrl);
-        instruction.setUser(userService.findById(userDetailsDto.getId()));
-        instruction.setCategory(categoryService.findByName(category));
-        Instruction instruction1 = instructionService.save(instruction);
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName("addStep");
-        mav.addObject("categories", getAllCategories());
-        mav.addObject("instruction", instruction1);
-        return mav;
-    }
+//    @RequestMapping(value = "/addInstruction", method = RequestMethod.POST)
+//    public ModelAndView AddInstruction(@RequestParam String title,@RequestParam String youtubeUrl,@RequestParam String category) {
+//        System.out.println(title);
+//        System.out.println(youtubeUrl);
+//        System.out.println(category);
+//        UserDetailsDto userDetailsDto =(UserDetailsDto) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        Instruction instruction = new Instruction();
+//        instruction.setTitle(title);
+//        instruction.setYoutubeUrl(youtubeUrl);
+//        instruction.setUser(userService.findById(userDetailsDto.getId()));
+//        instruction.setCategory(categoryService.findByName(category));
+//        Instruction instruction1 = instructionService.save(instruction);
+//        ModelAndView mav = new ModelAndView();
+//        mav.setViewName("addStep");
+//        mav.addObject("categories", getAllCategories());
+//        mav.addObject("instruction", instruction1);
+//        return mav;
+//    }
 
     @RequestMapping(value = "/signup", method = RequestMethod.GET)
     public ModelAndView redirectToRegistrationPage() {
@@ -125,9 +133,7 @@ public class MainController {
     }
 
     @RequestMapping(value = "/doSearch", method = RequestMethod.GET)
-    public ModelAndView search(
-            @RequestParam("searchText")
-                    String searchText
+    public ModelAndView search(@RequestParam("searchText") String searchText
     ) throws Exception
     {
         try {
@@ -142,6 +148,38 @@ public class MainController {
             System.out.println(e.getMessage());
         }
         return null;
+    }
+
+    @RequestMapping(value = "/addInstruction", method = RequestMethod.POST)
+    public ModelAndView AddInstruction(@RequestParam String title,@RequestParam String youtubeUrl,
+                                 @RequestParam String category,@RequestParam String image ) {
+        System.out.println(title);
+        System.out.println(youtubeUrl);
+        System.out.println(category);
+        System.out.println(image);
+        UserDetailsDto userDetailsDto =(UserDetailsDto) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Instruction instruction = new Instruction();
+        instruction.setTitle(title);
+        instruction.setYoutubeUrl(youtubeUrl);
+        instruction.setCategory(categoryService.findByName(category));
+        instruction.setImageUrl(image);
+        instruction.setUser(userService.findByName(userDetailsDto.getName()));
+        instructionService.save(instruction);
+        return new ModelAndView("addStep","instruction",instruction);
+    }
+    @RequestMapping(value = "/editStep", method = RequestMethod.POST)
+    @ResponseBody
+    public void editStep( @RequestParam String id, @RequestParam String instruction_id, @RequestParam String title,
+                          @RequestParam String description, @RequestParam String img) {
+        System.out.println(title);
+        System.out.println(id);
+        System.out.println(instruction_id);
+        System.out.println(description);
+        System.out.println(img);
+// UserDetailsDto userDetailsDto =(UserDetailsDto) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+// instructionRepository.save(new Instruction(title,youtubeUrl, userService.findById(userDetailsDto.getId()),categoryRepository.findOne(category)));
+//return "hooray";
     }
 
     private List<Category> getAllCategories(){

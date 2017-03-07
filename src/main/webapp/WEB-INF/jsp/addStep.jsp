@@ -24,7 +24,7 @@
 
     <div class="row border_bottom">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            <h1> Extra Long Name of some boring "who really cares" User's Instruction</h1>
+            <h1> ${instruction.title}</h1>
         </div>
         <div class="col-xs-6 col-md-6 col-lg-6 col-md-6 ">
 
@@ -33,7 +33,7 @@
                     <h2> Categories</h2>
                 </div>
                 <div class="col-xs-6 col-md-6 col-lg-6 col-md-6 ">
-                    <textarea class="form-control" disabled rows="2" disabled id="category">Some category</textarea>
+                    <textarea class="form-control" disabled rows="2" disabled id="category">${instruction.category.name}</textarea>
                 </div>
             </div>
 
@@ -63,6 +63,7 @@
             </div>
         </div>
     </div>
+
     <div class="container-fluid">
         <div class="row row-flex ">
             <ol class="list-group" id="sortable">
@@ -141,9 +142,6 @@
             </ol>
         </div>
     </div>
-
-
-
 </div>
 
 
