@@ -46,8 +46,8 @@
                     <spring:message code="main.theme"/><span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
-                    <li><a href="#"><spring:message code="theme.dark"/></a></li>
-                    <li><a href="#"><spring:message code="theme.light"/></a></li>
+                    <li><a href="<c:url value="/?mytheme=theme1"/>"><spring:message code="theme.light"/></a></li>
+                    <li><a href="<c:url value="/?mytheme=theme2"/>"><spring:message code="theme.dark"/></a></li>
                 </ul>
             </li>
             <li class="divider"></li>

@@ -41,12 +41,9 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
     @Bean
     public ViewResolver viewResolver() {
         InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
-
         viewResolver.setViewClass(JstlView.class);
         viewResolver.setPrefix("/WEB-INF/jsp/");
         viewResolver.setSuffix(".jsp");
-        viewResolver.setContentType("text/html; charset=UTF-8");
-
         return viewResolver;
     }
 
@@ -54,35 +51,19 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
     public ThemeResolver themeResolver(){
         CookieThemeResolver resolver = new CookieThemeResolver();
         resolver.setCookieMaxAge(2400);
-        resolver.setCookieName("my-locale-cookie");
-        resolver.setDefaultThemeName("themeLight");
+        resolver.setCookieName("my-theme-cookie");
+        resolver.setDefaultThemeName("theme1");
         return resolver;
     }
 
     @Bean
     public CookieLocaleResolver localeResolver(){
         CookieLocaleResolver localeResolver = new CookieLocaleResolver();
+        localeResolver.setCookieMaxAge(2400);
         localeResolver.setDefaultLocale(Locale.ENGLISH);
         localeResolver.setCookieName("my-locale-cookie");
         return localeResolver;
     }
-
-
-    @Bean
-    public LocaleChangeInterceptor localeChangeInterceptor(){
-        LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
-        interceptor.setParamName("lang");
-        return interceptor;
-    }
-
-    @Bean
-    public ThemeChangeInterceptor themeChangeInterceptor(){
-        ThemeChangeInterceptor themeChangeInterceptor = new ThemeChangeInterceptor();
-        themeChangeInterceptor.setParamName("mytheme");
-        return themeChangeInterceptor;
-    }
-
-
 
     @Bean
     public MessageSource messageSource() {
@@ -90,14 +71,13 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
         messageSource.setDefaultEncoding("utf-8");
         messageSource.setBasename("i18n/messages");
         messageSource.setUseCodeAsDefaultMessage(true);
-
         return messageSource;
     }
 
     @Bean
     public ThemeSource themeSource(){
         ResourceBundleThemeSource source = new ResourceBundleThemeSource();
-        source.setBasenamePrefix("themes/theme-");
+        source.setBasenamePrefix("themes/bootstrap-");
         return source;
     }
 
@@ -108,7 +88,11 @@ public class ApplicationConfig extends WebMvcConfigurerAdapter {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry){
-        registry.addInterceptor(localeChangeInterceptor());
-        registry.addInterceptor(themeChangeInterceptor());
+        LocaleChangeInterceptor localeChangeInterceptor = new LocaleChangeInterceptor();
+        localeChangeInterceptor.setParamName("lang");
+        registry.addInterceptor(localeChangeInterceptor);
+        ThemeChangeInterceptor themeChangeInterceptor = new ThemeChangeInterceptor();
+        themeChangeInterceptor.setParamName("mytheme");
+        registry.addInterceptor(themeChangeInterceptor);
     }
 }
