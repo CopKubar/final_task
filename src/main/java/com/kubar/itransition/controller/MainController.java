@@ -19,10 +19,7 @@ import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.social.connect.web.ProviderSignInUtils;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
@@ -60,46 +57,29 @@ public class MainController {
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ModelAndView showStartPage(HttpSession session) throws Exception {
         //bookDao.indexBooks();
-        for (Category category: categoryService.getAll()){
-            System.out.println(category.getName());
+        ModelAndView modelAndView = new ModelAndView();
+        if (securityUtil.getUserFromContext()!=null){
+            modelAndView.addObject("user", securityUtil.getUserFromContext());
         }
         return new ModelAndView("index","categories",categoryService.getAll());
     }
 
-    @RequestMapping(value = "/chooseTheme", method = RequestMethod.GET)
-    public ModelAndView chooseTheme(@RequestParam("theme")String theme, ServletContext context){
-        context.setAttribute("theme",theme);
-        return new ModelAndView("index");
-    }
-
     @RequestMapping(value = "/profile", method = RequestMethod.GET)
-    public ModelAndView AddInstruction(HttpSession session) {
+    public ModelAndView AddInstruction() {
         ModelAndView modelAndView=new ModelAndView("/profile");
         modelAndView.addObject("categories", categoryService.getAll());
         modelAndView.addObject("instruction", new Instruction());
-        session.setAttribute("theme", "dark");
         return modelAndView;
     }
 
-
-//    @RequestMapping(value = "/addInstruction", method = RequestMethod.POST)
-//    public ModelAndView AddInstruction(@RequestParam String title,@RequestParam String youtubeUrl,@RequestParam String category) {
-//        System.out.println(title);
-//        System.out.println(youtubeUrl);
-//        System.out.println(category);
-//        UserDetailsDto userDetailsDto =(UserDetailsDto) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//        Instruction instruction = new Instruction();
-//        instruction.setTitle(title);
-//        instruction.setYoutubeUrl(youtubeUrl);
-//        instruction.setUser(userService.findById(userDetailsDto.getId()));
-//        instruction.setCategory(categoryService.findByName(category));
-//        Instruction instruction1 = instructionService.save(instruction);
-//        ModelAndView mav = new ModelAndView();
-//        mav.setViewName("addStep");
-//        mav.addObject("categories", getAllCategories());
-//        mav.addObject("instruction", instruction1);
-//        return mav;
-//    }
+    @RequestMapping(value = "/profile/{userid}", method = RequestMethod.GET)
+    public ModelAndView profileForAdmin(@PathVariable("userid") String userid){
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("profile");
+        mav.addObject("categories", categoryService.getAll());
+        mav.addObject("user", userService.findById(userid));
+        return mav;
+    }
 
     @RequestMapping(value = "/signup", method = RequestMethod.GET)
     public ModelAndView redirectToRegistrationPage() {
@@ -117,7 +97,6 @@ public class MainController {
 
     @RequestMapping(value = "/user/register", method = RequestMethod.GET)
     public ModelAndView registrationUser(WebRequest web){
-        System.out.println("/controller/register");
         Connection<?> connection = new ProviderSignInUtils(connectionFactoryLocator, usersConnectionRepository).getConnectionFromSession(web);
         User user = userService.registerNewUser(securityUtil.createRegistrationUser(connection));
         securityUtil.logInUser(user);
@@ -163,7 +142,7 @@ public class MainController {
         instruction.setYoutubeUrl(youtubeUrl);
         instruction.setCategory(categoryService.findByName(category));
         instruction.setImageUrl(image);
-        instruction.setUser(userService.findByName(userDetailsDto.getName()));
+        instruction.setUser(userService.findById(userDetailsDto.getId()));
         instructionService.save(instruction);
         return new ModelAndView("addStep","instruction",instruction);
     }
@@ -180,6 +159,11 @@ public class MainController {
 
 // instructionRepository.save(new Instruction(title,youtubeUrl, userService.findById(userDetailsDto.getId()),categoryRepository.findOne(category)));
 //return "hooray";
+    }
+
+    @RequestMapping(value = "/getAllUsers", method = RequestMethod.GET)
+    public ModelAndView getAllUsers(){
+        return new ModelAndView("users", "users", userService.findAll());
     }
 
     private List<Category> getAllCategories(){

@@ -17,6 +17,11 @@
         </form>
 
         <ul class="nav navbar-nav navbar-right">
+            <sec:authorize access="hasRole('ROLE_ADMIN')">
+                <li role="presentation" class="dropdown">
+                    <a href="/getAllUsers">All Users</a>
+                </li>
+            </sec:authorize>
             <li role="presentation" class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                     <spring:message code="main.categories"/> <span class="caret"></span>
@@ -46,8 +51,8 @@
                     <spring:message code="main.theme"/><span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
-                    <li><a href="#"><spring:message code="theme.dark"/></a></li>
-                    <li><a href="#"><spring:message code="theme.light"/></a></li>
+                    <li><a href="<c:url value="/?mytheme=theme1"/>"><spring:message code="theme.light"/></a></li>
+                    <li><a href="<c:url value="/?mytheme=theme2"/>"><spring:message code="theme.dark"/></a></li>
                 </ul>
             </li>
             <li class="divider"></li>
@@ -57,8 +62,8 @@
                         <spring:message code="main.signed"/> <sec:authentication property="principal.name"/><span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu">
+                        <li><a href="${pageContext.request.contextPath}/profile/${user.id}"><spring:message code="main.profile"/></a></li>
                         <li><a href="${pageContext.request.contextPath}/logout"><spring:message code="user.logout"/></a></li>
-                        <li><a href="${pageContext.request.contextPath}/profile"><spring:message code="main.profile"/></a></li>
                     </ul>
                 </li>
             </sec:authorize>

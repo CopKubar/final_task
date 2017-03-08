@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -35,8 +36,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public User findByName(String name) {
-        return userDao.findByName(name);
+    public List<User> findAll() {
+        return userDao.findAll();
     }
 
     @Override
