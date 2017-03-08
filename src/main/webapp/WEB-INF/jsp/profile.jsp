@@ -21,6 +21,12 @@
 
 <div class="container">
     <div class="row border_bottom">
+        <sec:authorize access="hasRole('ROLE_ADMIN')">
+            <form action="/banForUser/" method="post">
+                <input type="hidden" >
+            </form>
+        </sec:authorize>
+
 
         <div class="col-xs-6 col-md-6 col-lg-8 col-md-8 position_name">
             <%--${user_name}--%>
@@ -31,12 +37,15 @@
                 I am Nobody
             </sec:authorize>
 
+            <sec:authorize access="h"
         </div>
         <div class="col-xs-6 col-md-6 col-lg-4 col-md-4 user_img">
             <img src="https://s.pinimg.com/images/user/default_280.png" alt="User Photo">
 
         </div>
     </div>
+
+    <sec:authorize access="hasRole('ROLE_USER')">
     <div class="container-fluid">
         <div class="row row-flex ">
             <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3" data-toggle="modal" href='#new_instruction'>
@@ -64,6 +73,7 @@
             </div>
         </div>
     </div>
+    </sec:authorize>
 
     <div class="modal fade" id="new_instruction">
         <div class="modal-dialog">
