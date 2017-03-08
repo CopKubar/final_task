@@ -10,6 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Add instruction</title>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/4.0.1/dropzone.js"></script>
+    <script type="text/javascript" src="<c:url value="/static/js/vendor/like-dislike.min.js"/>"></script>
     <link rel="stylesheet" href="<spring:theme code='styleSheet'/>" type="text/css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
@@ -37,7 +38,17 @@
         </div>
         <sec:authorize access="hasRole('ROLE_ADMIN')">
             <c:choose>
-                <c:when test="${pageContext.request.userPrincipal.name eq user.name}"/>
+                <c:when test="${pageContext.request.userPrincipal.name eq user.name}">
+                    <div id="demo">
+                        <button class="like">Like
+                            <span class="likes">0</span>
+                        </button>
+                        <button class="dislike">Dislike
+                            <span class="dislikes">0</span>
+                        </button>
+                    </div>
+
+                </c:when>
                 <c:otherwise>
                     <div class="col-xs-1 col-md-1 col-lg-1 col-md-1 position_name">
                         <form action="/ban/user" method="post">

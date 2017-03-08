@@ -11,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -74,6 +76,17 @@ public class LikeServiceImpl implements LikeService{
         }
     }
 
+    @Override
+    public Set<Like> findAllLikes(User user) {
+        return getAllLikeOrDislike(user.getLikes(), true);
+    }
+
+    @Override
+    public Set<Like> findAllDislikes(User user) {
+        return getAllLikeOrDislike(user.getLikes(), false);
+    }
+
+
     private void persistAllAboutLike(User user, boolean state, Instruction instruction){
         Like like=likeDao.saveAndFlush(new Like(user, state, instruction));
         Set<Like>userLikes=new HashSet<>();
@@ -84,5 +97,22 @@ public class LikeServiceImpl implements LikeService{
         instructionDao.saveAndFlush(instruction);
     }
 
+    private Set<Like> getAllLikeOrDislike(Set<Like> likes, boolean value){
+        Set<Like>sortedLikes=new HashSet<>();
+        if (value){
+            for (Like like: likes){
+                if (like.getState()){
+                    sortedLikes.add(like);
+                }
+            }
+        }else {
+            for (Like like: likes){
+                if (!like.getState()){
+                    sortedLikes.add(like);
+                }
+            }
+        }
+        return sortedLikes;
+    }
 
 }

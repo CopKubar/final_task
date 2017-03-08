@@ -6,6 +6,7 @@ import com.kubar.itransition.model.*;
 import com.kubar.itransition.security.util.SecurityUtil;
 import com.kubar.itransition.service.CategoryService;
 import com.kubar.itransition.service.InstructionService;
+import com.kubar.itransition.service.LikeService;
 import com.kubar.itransition.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -50,6 +51,9 @@ public class MainController {
 
     @Autowired
     private InstructionService instructionService;
+
+    @Autowired
+    private LikeService likeService;
 
     @RequestMapping(value = {"/","/index"}, method = RequestMethod.GET)
     public ModelAndView showStartPage() throws Exception {
@@ -161,9 +165,12 @@ public class MainController {
 //return "hooray";
     }
 
-    @RequestMapping(value = "/getAllUsers", method = RequestMethod.GET)
-    public ModelAndView getAllUsers(){
-        return new ModelAndView("users", "users", userService.findAll());
+    @RequestMapping(value = "/likes", method = RequestMethod.GET)
+    public ModelAndView likes(){
+        ModelAndView modelAndView = new ModelAndView("likes");
+        modelAndView.addObject("likes", likeService.findAllLikes(securityUtil.getUserFromContext()).size());
+        modelAndView.addObject("dislikes", likeService.findAllDislikes(securityUtil.getUserFromContext()).size());
+        return modelAndView;
     }
 
     private List<Category> getAllCategories(){
