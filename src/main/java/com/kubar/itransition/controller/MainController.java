@@ -2,10 +2,7 @@ package com.kubar.itransition.controller;
 
 import com.kubar.itransition.dao.BookDao;
 import com.kubar.itransition.dto.UserDetailsDto;
-import com.kubar.itransition.model.Category;
-import com.kubar.itransition.model.Instruction;
-import com.kubar.itransition.model.Step;
-import com.kubar.itransition.model.User;
+import com.kubar.itransition.model.*;
 import com.kubar.itransition.security.util.SecurityUtil;
 import com.kubar.itransition.service.CategoryService;
 import com.kubar.itransition.service.InstructionService;
@@ -24,10 +21,10 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.FileOutputStream;
 import java.util.List;
 
 @Controller
@@ -54,31 +51,34 @@ public class MainController {
     @Autowired
     private InstructionService instructionService;
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
-    public ModelAndView showStartPage(HttpSession session) throws Exception {
+    @RequestMapping(value = {"/","/index"}, method = RequestMethod.GET)
+    public ModelAndView showStartPage() throws Exception {
         //bookDao.indexBooks();
-        ModelAndView modelAndView = new ModelAndView();
-        if (securityUtil.getUserFromContext()!=null){
+        ModelAndView modelAndView = new ModelAndView("index","categories",categoryService.getAll());
+        if (!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")){
             modelAndView.addObject("user", securityUtil.getUserFromContext());
         }
-        return new ModelAndView("index","categories",categoryService.getAll());
-    }
-
-    @RequestMapping(value = "/profile", method = RequestMethod.GET)
-    public ModelAndView AddInstruction() {
-        ModelAndView modelAndView=new ModelAndView("/profile");
-        modelAndView.addObject("categories", categoryService.getAll());
-        modelAndView.addObject("instruction", new Instruction());
         return modelAndView;
     }
 
+    @RequestMapping(value = "/accessDenied", method = RequestMethod.GET)
+    public ModelAndView accessDenied(){
+        return new ModelAndView("error404");
+    }
+
+    @RequestMapping(value = "/ban/user", method = RequestMethod.POST)
+    public ModelAndView banUser(@RequestParam("userId")String userId){
+        userService.setBanToUser(userService.findById(userId));
+        return new ModelAndView(new RedirectView("/"));
+    }
+
     @RequestMapping(value = "/profile/{userid}", method = RequestMethod.GET)
-    public ModelAndView profileForAdmin(@PathVariable("userid") String userid){
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName("profile");
-        mav.addObject("categories", categoryService.getAll());
-        mav.addObject("user", userService.findById(userid));
-        return mav;
+    public ModelAndView AddInstruction(@PathVariable String userid) {
+        ModelAndView modelAndView=new ModelAndView("profile");
+        modelAndView.addObject("categories", categoryService.getAll());
+        modelAndView.addObject("user", userService.findById(userid));
+        modelAndView.addObject("foreignAccount", isForeignAccount(userid));
+        return modelAndView;
     }
 
     @RequestMapping(value = "/signup", method = RequestMethod.GET)
@@ -168,6 +168,19 @@ public class MainController {
 
     private List<Category> getAllCategories(){
         return categoryService.getAll();
+    }
+
+    private Boolean isForeignAccount(String userid){
+        try {
+            if (userid.equals(securityUtil.getUserFromContext().getId())){
+                return false;
+            }else {
+                return true;
+            }
+        }catch (Exception e){
+            return null;
+        }
+
     }
 
 }

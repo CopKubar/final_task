@@ -51,12 +51,12 @@
                     <spring:message code="main.theme"/><span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
-                    <li><a href="<c:url value="/?mytheme=theme1"/>"><spring:message code="theme.light"/></a></li>
-                    <li><a href="<c:url value="/?mytheme=theme2"/>"><spring:message code="theme.dark"/></a></li>
+                    <li><a href="<c:url value="${pageContext.request.contextPath}/?mytheme=theme1"/>"><spring:message code="theme.light"/></a></li>
+                    <li><a href="<c:url value="${pageContext.request.contextPath}/?mytheme=theme2"/>"><spring:message code="theme.dark"/></a></li>
                 </ul>
             </li>
             <li class="divider"></li>
-            <sec:authorize access="hasRole('ROLE_USER')">
+            <sec:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_USER','ROLE_BANNED')">
                 <li role="presentation" class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                         <spring:message code="main.signed"/> <sec:authentication property="principal.name"/><span class="caret"></span>

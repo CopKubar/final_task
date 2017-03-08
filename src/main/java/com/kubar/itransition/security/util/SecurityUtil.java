@@ -45,6 +45,7 @@ public class SecurityUtil {
     public User getUserFromContext(){
         try{
             UserDetailsDto userDetailsDto =(UserDetailsDto) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            System.out.println(userDetailsDto.getName());
             return userService.findById(userDetailsDto.getId());
         }catch (Exception e){
             e.printStackTrace();

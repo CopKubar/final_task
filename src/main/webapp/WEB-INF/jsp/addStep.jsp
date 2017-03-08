@@ -13,6 +13,7 @@
 
     <link rel="stylesheet" href="<spring:theme code='styleSheet'/>" type="text/css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
     <link href="<c:url value="/static/css/style.css"/>" type="text/css" rel="stylesheet">
     <link href="<c:url value="/static/css/jqcloud.min.css"/>" type="text/css" rel="stylesheet">
@@ -41,7 +42,7 @@
                     <h2> Video</h2>
                 </div>
                 <div class="col-xs-6 col-md-6 col-lg-6 col-md-6 ">
-                    <textarea class="form-control" disabled rows="2" disabled id="youtubeUrl">${instruction.youtubeUrl}</textarea>
+                    ${instruction.youtubeUrl}
                 </div>
             </div>
 

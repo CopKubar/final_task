@@ -27,27 +27,39 @@
             </form>
         </sec:authorize>
 
-
-        <div class="col-xs-6 col-md-6 col-lg-8 col-md-8 position_name">
-            <%--${user_name}--%>
+        <div class="col-xs-5 col-md-5 col-lg-7 col-md-7 position_name">
             <sec:authorize access="hasRole('ROLE_USER')">
                 <sec:authentication property="principal.name"/>
             </sec:authorize>
             <sec:authorize access="isAnonymous()">
                 I am Nobody
             </sec:authorize>
-
-            <sec:authorize access="h"
         </div>
+        <sec:authorize access="hasRole('ROLE_ADMIN')">
+            <c:choose>
+                <c:when test="${pageContext.request.userPrincipal.name eq user.name}"/>
+                <c:otherwise>
+                    <div class="col-xs-1 col-md-1 col-lg-1 col-md-1 position_name">
+                        <form action="/ban/user" method="post">
+                            <input type="hidden" value="${user.id}" name="userId">
+                            <input type="hidden" name="${_csrf.parameterName}"
+                                   value="${_csrf.token}" />
+                            <input type="submit" value="Забанить">
+                        </form>
+                    </div>
+                </c:otherwise>
+            </c:choose>
+        </sec:authorize>
         <div class="col-xs-6 col-md-6 col-lg-4 col-md-4 user_img">
             <img src="https://s.pinimg.com/images/user/default_280.png" alt="User Photo">
 
         </div>
     </div>
 
-    <sec:authorize access="hasRole('ROLE_USER')">
+    <sec:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_USER')">
     <div class="container-fluid">
         <div class="row row-flex ">
+            <c:if test="${foreignAccount eq false}">
             <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3" data-toggle="modal" href='#new_instruction'>
                 <div class="thumbnail">
                     <img src="/static/img/add_blue.png" alt="+">
@@ -56,6 +68,7 @@
                     <h3>Create Instruction</h3>
                 </div>
             </div>
+            </c:if>
             <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
                 <div class="thumbnail">
                     <a href="#myModal" data-toggle="modal">

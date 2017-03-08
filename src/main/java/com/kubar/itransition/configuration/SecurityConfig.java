@@ -43,7 +43,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.addFilterBefore(filter, CsrfFilter.class);
         http
                 .formLogin()
-                    .loginPage("/index")
+                    .loginPage("/accessDenied")
                     .loginProcessingUrl("/login/authenticate")
                     .failureUrl("/login?error=bad_credentials")
                 .and()
@@ -53,6 +53,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .logoutSuccessUrl("/")
                 .and()
                     .authorizeRequests()
+                .antMatchers("/").permitAll()
                         .antMatchers(
                                 "/auth/**",
                                 "/login",
@@ -60,11 +61,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                                 "/user/register/**",
                                 "/doSearch",
                                 "/search",
-                                "/index"
+                                "/index",
+                                "/",
+                                "/profile/**"
                         ).permitAll()
-                .and()
-                    .apply(new SpringSocialConfigurer())
-        .and().csrf();
+                .antMatchers("/profile/**").hasAnyRole("USER","ADMIN")
+                .and().apply(new SpringSocialConfigurer())
+                .and().exceptionHandling().accessDeniedPage("/accessDenied")
+                .and().csrf();
     }
 
 
