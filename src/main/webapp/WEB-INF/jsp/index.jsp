@@ -19,7 +19,7 @@
 <jsp:include page="navbar.jsp"/>
 <!-- NAVBAR -->
 
-<div class="container">
+<div class="container-fluid">
     <br>
 
     <br>
@@ -33,100 +33,100 @@
         </div>
 
         <div class="row row-flex ">
-            <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
-                <div class="thumbnail">
-                    <a href="#myModal" data-toggle="modal">
-                        <div class="caption">
-                            <img src="https://www.codeproject.com/KB/GDI-plus/ImageProcessing2/img.jpg" alt="...">
-                            <h3>Thumbnail label</h3>
+            <c:forEach var="instruction" items="${popularInstructions}">
+                <div class=" col-xs-12 col-sm-6 col-md-3 col-lg-3">
+                    <div class="thumbnail">
+                        <a href="/showinstruction/${instruction.id}">
+                            <div class="caption col-xs-12 col-sm-12 col-md-12 col-lg-12" >
+                                <img src="${instruction.imageUrl}" class="img-responsive" alt="instruction image">
+                            </div>
+                            <div class="row">
+                                <div class="caption col-xs-11 col-sm-11 col-md-11 col-lg-11" >
+                                    <h3>${instruction.title}</h3>
+                                </div>
+                            </div>
+                        </a>
+                        <div class="row">
+                            <div class="caption col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 col-xs-11 col-sm-11 col-md-11 col-lg-11" >
+
+                                <div class="row">
+                                    <div class="caption col-xs-12 col-sm-12 col-md-12 col-lg-12" >
+                                        <div class="row">
+                                            <div class="caption col-xs-6 col-sm-6 col-md-6 col-lg-6" >
+                                                <i class="fa fa-user-o" aria-hidden="true"></i>
+                                                <a href="/profile/${instruction.user.id}"><span>${instruction.user.name}</span></a>
+                                            </div>
+                                            <div class="caption col-xs-6 col-sm-6 col-md-6 col-lg-6" >
+                                                <i class="fa fa-pencil" aria-hidden="true"></i>
+                                                <a href="/category/${instruction.category.name}" >
+                                                    <span>${instruction.category.name}</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </a>
+                    </div>
                 </div>
-                <div class="caption">
-                    <p>
-                        <a href="#" class="btn btn-default" role="button"><i class="fa fa-sort-asc" style="font-size:24px"></i></a>
-                        <span class="rate" style="font-size: 1.5em;">100</span>
-                        <a href="#" class="btn btn-default" role="button"><i class="fa fa-sort-down" style="font-size:24px"></i></a>
-                    </p>
-                </div>
-            </div>
+            </c:forEach>
+
         </div>
         <div class="jumbotron">
             <h1>The New One</h1>
             <!-- <p>this text 4 fun</p>  -->
         </div>
-
         <div class="row row-flex ">
-            <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
-                <div class="thumbnail">
-                    <a href="#myModal" data-toggle="modal">
-                        <div class="caption">
-                            <img src="https://www.codeproject.com/KB/GDI-plus/ImageProcessing2/img.jpg" alt="...">
-                            <h3>Thumbnail label</h3>
+            <c:forEach var="instruction" items="${newInstructions}">
+                <div class=" col-xs-12 col-sm-6 col-md-3 col-lg-3">
+                    <div class="thumbnail">
+                        <a href="/showinstruction/${instruction.id}">
+                            <div class="caption col-xs-12 col-sm-12 col-md-12 col-lg-12" >
+                                <img src="${instruction.imageUrl}" class="img-responsive" alt="instruction image">
+                            </div>
+                            <div class="row">
+                                <div class="caption col-xs-11 col-sm-11 col-md-11 col-lg-11" >
+                                    <h3>${instruction.title}</h3>
+                                </div>
+                            </div>
+                        </a>
+                        <div class="row">
+                            <div class="caption col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 col-xs-11 col-sm-11 col-md-11 col-lg-11" >
+
+                                <div class="row">
+                                    <div class="caption col-xs-12 col-sm-12 col-md-12 col-lg-12" >
+                                        <div class="row">
+                                            <div class="caption col-xs-6 col-sm-6 col-md-6 col-lg-6" >
+                                                <i class="fa fa-user-o" aria-hidden="true"></i>
+                                                <a href="/profile/${instruction.user.id}"><span>${instruction.user.name}</span></a>
+                                            </div>
+                                            <div class="caption col-xs-6 col-sm-6 col-md-6 col-lg-6" >
+                                                <i class="fa fa-pencil" aria-hidden="true"></i>
+                                                <a href="/category/${instruction.category.name}" >
+                                                    <span>${instruction.category.name}</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <%--<div class="caption col-xs-12 col-sm-12 col-md-12 col-lg-12" >--%>
+                                        <%--<a href="#" class="btn btn-default" role="button"><i class="fa fa-thumbs-up" aria-hidden="true"></i></a>--%>
+                                            <%--&lt;%&ndash;<span class="rate" style="font-size: 1.5em;">instruction.likeCounter</span>&ndash;%&gt;--%>
+                                        <%--<span class="rate" style="font-size: 1.5em;">????????</span>--%>
+                                            <%--&lt;%&ndash;??????????????????????????????????????&ndash;%&gt;--%>
+                                        <%--<a href="#" class="btn btn-default" role="button"><i class="fa fa-thumbs-down" aria-hidden="true"></i></a>--%>
+                                    <%--</div>--%>
+                                </div>
+                            </div>
                         </div>
-                    </a>
-                </div>
-                <div class="caption">
-                    <p>
-                        <a href="#" class="btn btn-default" role="button"><i class="fa fa-sort-asc" style="font-size:24px"></i></a>
-                        <span class="rate" style="font-size: 1.5em;">100</span>
-                        <a href="#" class="btn btn-default" role="button"><i class="fa fa-sort-down" style="font-size:24px"></i></a>
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="jumbotron">
-        <h1>????</h1>
-        <!-- <p>this text 4 fun</p>  -->
-    </div>
-
-    <div class="row row-flex ">
-        <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
-            <div class="thumbnail">
-                <a href="#myModal" data-toggle="modal">
-                    <div class="caption">
-                        <img src="https://www.codeproject.com/KB/GDI-plus/ImageProcessing2/img.jpg" alt="...">
-                        <h3>Thumbnail label</h3>
                     </div>
-                </a>
-            </div>
-            <div class="caption">
-                <p>
-                    <a href="#" class="btn btn-default" role="button"><i class="fa fa-sort-asc" style="font-size:24px"></i></a>
-                    <span class="rate" style="font-size: 1.5em;">100</span>
-                    <a href="#" class="btn btn-default" role="button"><i class="fa fa-sort-down" style="font-size:24px"></i></a>
-                </p>
-            </div>
+                </div>
+            </c:forEach>
+
         </div>
+
     </div>
+
 </div>
-
-
-
-<!-- Modal Instruction -->
-<div id="myModal" class="modal fade">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Confirmation</h4>
-            </div>
-            <div class="modal-body">
-                <p>Do you want to save changes you made to document before closing?</p>
-                <p class="text-warning"><small>If you don't save, your changes will be lost.</small></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Modal Instruction -->
-
-
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <!-- <script src="http://code.jquery.com/jquery-1.7.1.min.js"></script> -->

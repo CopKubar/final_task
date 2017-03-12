@@ -17,11 +17,6 @@
         </form>
 
         <ul class="nav navbar-nav navbar-right">
-            <sec:authorize access="hasRole('ROLE_ADMIN')">
-                <li role="presentation" class="dropdown">
-                    <a href="/getAllUsers">All Users</a>
-                </li>
-            </sec:authorize>
             <li role="presentation" class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                     <spring:message code="main.categories"/> <span class="caret"></span>
@@ -92,9 +87,9 @@
                 <div id='social-icons-conatainer'>
                     <%--<div class='modal-body-right'>--%>
                     <div class="modal-social-icons">
-                        <a href='${pageContext.request.contextPath}/auth/facebook' class="btn btn-default facebook"> <i class="fa fa-facebook modal-icons"></i></a>
-                        <a href='${pageContext.request.contextPath}/auth/twitter' class="btn btn-default twitter"> <i class="fa fa-twitter modal-icons"></i></a>
-                        <a href='${pageContext.request.contextPath}/auth/vkontakte' class="btn btn-default vk"> <i class="fa fa-vk modal-icons"></i></a>
+                        <a href='${pageContext.request.contextPath}/auth/facebook' class="btn btn-default facebook">  <i class="fa fa-facebook modal-icons"> <spring:message code="user.login.with.facebook"/></i></a>
+                        <a href='${pageContext.request.contextPath}/auth/twitter' class="btn btn-default twitter"> <i class="fa fa-twitter modal-icons"> <spring:message code="user.login.with.twitter"/></i></a>
+                        <a href='${pageContext.request.contextPath}/auth/vkontakte' class="btn btn-default vk"> <i class="fa fa-vk modal-icons"> <spring:message code="user.login.with.vkontakte"/></i></a>
                     </div>
                     <%--</div>--%>
                 </div>

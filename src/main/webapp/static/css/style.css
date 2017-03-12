@@ -41,28 +41,29 @@ body { padding-top: 70px; }
 /*.list-group-item {*/
     /*display: list-item;*/
 /*}*/
-ol {
+.outer {
     counter-reset:li; /* Инициализируем счетчик */
-    padding:0; /* Удаляем  установленное по умолчанию левое поле*/
-    list-style:none; /* Отменяем нумерацию установленную по умолчанию */
+    /*padding:0; !* Удаляем  установленное по умолчанию левое поле*!*/
+    /*list-style:none; !* Отменяем нумерацию установленную по умолчанию *!*/
 }
-ol li {
+.inner {
     position:relative; /* Создаем контекст для позиционирования элементов */
-    margin:0 0 6px 2em; /* Даем каждому элементу списка отступ слева, что бы освободить пространство для нумерации */
-    padding:4px 8px;
-    border-top:2px solid #666;
+    /*margin:0 0 6px 2em; !* Даем каждому элементу списка отступ слева, что бы освободить пространство для нумерации *!*/
+    /*padding:4px 8px;*/
+    /*border-top:2px solid #666;*/
     background:#f6f6f6;
 }
-ol li:before {
+/*.ui-state-highlight { height: 10em; line-height: 10em; }*/
+.inner:before {
     content:counter(li); /* В качестве данных используем счетчик */
     counter-increment:li; /* Увеличиваем значение счетчика на 1 */
     /* Позиционируем и оформляем цифры */
     position:absolute;
     top:-2px;
-    left:-2em;
+    /*left:-2em;*/
     width:2em;
     padding:4px 0;
-    border-top:2px solid #666;
+    /*border-top:2px solid #666;*/
     color:#fff;
     background:#666;
     font-weight:bold;
@@ -114,4 +115,12 @@ ol li:before {
     color: #fff;
     background-color: #0089bb;
     border-color: #0089bb;
+}
+/*for comments*/
+.user_name{
+    font-size:14px;
+    font-weight: bold;
+}
+.comments-list .media{
+    border-bottom: 1px dotted #ccc;
 }

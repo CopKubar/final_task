@@ -16,7 +16,7 @@ public class User implements Serializable{
     private SocialMediaService signInProvider;
     private Set<Role> roles=new HashSet<>();
     private List<Comment> comments=new ArrayList<>();
-    private Set<Like> likes=new HashSet<>();
+    private List<Like> likes=new ArrayList<>();
     private List<Instruction> instructions=new ArrayList<>();
 
 
@@ -79,16 +79,16 @@ public class User implements Serializable{
         this.comments = comments;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.LAZY)
-    public Set<Like> getLikes() {
+    @OneToMany(cascade = {CascadeType.REMOVE, CascadeType.REFRESH}, mappedBy = "user", fetch = FetchType.LAZY)
+    public List<Like> getLikes() {
         return likes;
     }
 
-    public void setLikes(Set<Like> likes) {
+    public void setLikes(List<Like> likes) {
         this.likes = likes;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "user", fetch = FetchType.LAZY)
     public List<Instruction> getInstructions() {
         return instructions;
     }
@@ -110,5 +110,23 @@ public class User implements Serializable{
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
+        User user = (User) o;
+
+        if (id != null ? !id.equals(user.id) : user.id != null) return false;
+        if (name != null ? !name.equals(user.name) : user.name != null) return false;
+        return signInProvider == user.signInProvider;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (signInProvider != null ? signInProvider.hashCode() : 0);
+        return result;
+    }
 }

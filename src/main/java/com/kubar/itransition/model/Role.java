@@ -57,9 +57,13 @@ public class Role implements Serializable {
         Role role = (Role) o;
 
         if (id != null ? !id.equals(role.id) : role.id != null) return false;
-        if (type != null ? !type.equals(role.type) : role.type != null) return false;
-        return users != null ? users.equals(role.users) : role.users == null;
+        return type != null ? type.equals(role.type) : role.type == null;
     }
 
-
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (type != null ? type.hashCode() : 0);
+        return result;
+    }
 }

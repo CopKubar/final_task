@@ -10,7 +10,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Add instruction</title>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/4.0.1/dropzone.js"></script>
-    <script type="text/javascript" src="<c:url value="/static/js/vendor/like-dislike.min.js"/>"></script>
     <link rel="stylesheet" href="<spring:theme code='styleSheet'/>" type="text/css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
@@ -23,44 +22,37 @@
 <div class="container">
     <div class="row border_bottom">
         <sec:authorize access="hasRole('ROLE_ADMIN')">
-            <form action="/banForUser/" method="post">
-                <input type="hidden" >
-            </form>
-        </sec:authorize>
-
-        <div class="col-xs-5 col-md-5 col-lg-7 col-md-7 position_name">
-            <sec:authorize access="hasRole('ROLE_USER')">
-                <sec:authentication property="principal.name"/>
-            </sec:authorize>
-            <sec:authorize access="isAnonymous()">
-                I am Nobody
-            </sec:authorize>
-        </div>
-        <sec:authorize access="hasRole('ROLE_ADMIN')">
             <c:choose>
-                <c:when test="${pageContext.request.userPrincipal.name eq user.name}">
-                    <div id="demo">
-                        <button class="like">Like
-                            <span class="likes">0</span>
-                        </button>
-                        <button class="dislike">Dislike
-                            <span class="dislikes">0</span>
-                        </button>
-                    </div>
-
-                </c:when>
-                <c:otherwise>
-                    <div class="col-xs-1 col-md-1 col-lg-1 col-md-1 position_name">
-                        <form action="/ban/user" method="post">
-                            <input type="hidden" value="${user.id}" name="userId">
+                <c:when test="${foreignAccount eq true}">
+                    <div class="col-xs-12 col-md-12 col-lg-12 col-md-12">
+                        <form action="/ban/user/${user.id}" method="post">
                             <input type="hidden" name="${_csrf.parameterName}"
                                    value="${_csrf.token}" />
                             <input type="submit" value="Забанить">
                         </form>
                     </div>
-                </c:otherwise>
+                    <div class="col-xs-12 col-md-12 col-lg-12 col-md-12">
+                        <form action="/set/admin/${user.id}" method="post">
+                            <input type="hidden" name="${_csrf.parameterName}"
+                                   value="${_csrf.token}" />
+                            <input type="submit" value="Сделать админом">
+                        </form>
+                    </div>
+                </c:when>
             </c:choose>
         </sec:authorize>
+
+
+        <div class="col-xs-6 col-md-6 col-lg-8 col-md-8 position_name">
+
+            <sec:authorize access="hasRole('ROLE_USER')">
+                ${user.name}
+            </sec:authorize>
+            <sec:authorize access="isAnonymous()">
+                I am Nobody
+            </sec:authorize>
+
+        </div>
         <div class="col-xs-6 col-md-6 col-lg-4 col-md-4 user_img">
             <img src="https://s.pinimg.com/images/user/default_280.png" alt="User Photo">
 
@@ -191,10 +183,11 @@
         acceptedFiles: '.jpg,.png,.jpeg,.gif',
         url: 'https://api.cloudinary.com/v1_1/depejwdfb/image/upload'
     });
-    var prefix = "user_id"+ "_"+"instruction_id"+"_"
+
+    var prefix = "user_id"+ "_"+"instruction_id"+"_";
     myDropzone.on('sending', function (file, xhr, formData) {
         console.log("sending")
-        var fileName = prefix + file.name;
+        var fileName =  prefix + file.name ;
         //var fileName =file.name;
         //oadImage(fileName, '#img_url');
         formData.append('api_key', 338123839493786);
@@ -208,11 +201,11 @@
     });
     myDropzone.on("complete", function (file) {
         console.log("complete");
-        var fileName = prefix + file.name;
+        var url = "http://res.cloudinary.com/depejwdfb/image/upload/c_pad,h_200/" + prefix + file.name + ".jpg";
         console.log(file.type);
-        console.log(fileName);
+        console.log(file);
         //var fileName =file.name;
-        loadImage(fileName, '#img_url');
+        loadImage(url, '#img_url');
     });
 
 

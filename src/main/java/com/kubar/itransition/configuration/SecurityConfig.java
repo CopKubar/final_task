@@ -63,9 +63,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                                 "/search",
                                 "/index",
                                 "/",
-                                "/profile/**"
+                                "/profile/**",
+                                "/test",
+                                "/get_step",
+                                "/showinstruction/**"
                         ).permitAll()
-                .antMatchers("/profile/**").hasAnyRole("USER","ADMIN")
                 .and().apply(new SpringSocialConfigurer())
                 .and().exceptionHandling().accessDeniedPage("/accessDenied")
                 .and().csrf();

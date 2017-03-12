@@ -12,11 +12,12 @@ public interface LikeService {
 
     Like findById(Long id);
 
-    void Like(User user, Instruction instruction);
+    void changeRating(User user, Instruction instruction, int ratingValue);
 
-    void Dislike(User user, Instruction instruction);
+    Integer findAllLikes(List<Like>likes);
 
-    Set<Like> findAllLikes(User user);
+    void delete(Like like);
 
-    Set<Like>findAllDislikes(User user);
+    int getUsersStateLike(User user, Instruction instruction);
+
 }

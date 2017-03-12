@@ -4,7 +4,9 @@ import org.hibernate.search.annotations.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -17,13 +19,13 @@ public class Instruction implements Serializable{
     private String youtubeUrl;
     private User user;
     private Category category;
-    private Set<Like> likes=new HashSet<>();
-    private Set<Step> steps=new HashSet<>();
+    private List<Like> likes=new ArrayList<>();
+    private List<Step> steps=new ArrayList<>();
     private Set<Tag> tags=new HashSet<>();
 
     public Instruction(){}
 
-    public Instruction(String title, String imageUrl, String youtubeUrl, User user, Category category, Set<Step> steps, Set<Tag> tags) {
+    public Instruction(String title, String imageUrl, String youtubeUrl, User user, Category category, List<Step> steps, Set<Tag> tags) {
         this.title = title;
         this.imageUrl = imageUrl;
         this.youtubeUrl = youtubeUrl;
@@ -92,21 +94,22 @@ public class Instruction implements Serializable{
         this.category = category;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "instruction", fetch = FetchType.LAZY)
-    public Set<Like> getLikes() {
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "instruction", fetch = FetchType.LAZY)
+    public List<Like> getLikes() {
         return likes;
     }
 
-    public void setLikes(Set<Like> likes) {
+    public void setLikes(List<Like> likes) {
         this.likes = likes;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "instruction", fetch = FetchType.LAZY)
-    public Set<Step> getSteps() {
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "instruction", fetch = FetchType.LAZY)
+    @OrderBy("position")
+    public List<Step> getSteps() {
         return steps;
     }
 
-    public void setSteps(Set<Step> steps) {
+    public void setSteps(List<Step> steps) {
         this.steps = steps;
     }
 
@@ -137,5 +140,29 @@ public class Instruction implements Serializable{
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
+        Instruction that = (Instruction) o;
+
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (title != null ? !title.equals(that.title) : that.title != null) return false;
+        if (imageUrl != null ? !imageUrl.equals(that.imageUrl) : that.imageUrl != null) return false;
+        if (youtubeUrl != null ? !youtubeUrl.equals(that.youtubeUrl) : that.youtubeUrl != null) return false;
+        if (user != null ? !user.equals(that.user) : that.user != null) return false;
+        return category != null ? category.equals(that.category) : that.category == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (title != null ? title.hashCode() : 0);
+        result = 31 * result + (imageUrl != null ? imageUrl.hashCode() : 0);
+        result = 31 * result + (youtubeUrl != null ? youtubeUrl.hashCode() : 0);
+        result = 31 * result + (user != null ? user.hashCode() : 0);
+        result = 31 * result + (category != null ? category.hashCode() : 0);
+        return result;
+    }
 }
