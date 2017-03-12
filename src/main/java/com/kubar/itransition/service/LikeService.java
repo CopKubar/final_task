@@ -4,12 +4,20 @@ import com.kubar.itransition.model.Instruction;
 import com.kubar.itransition.model.Like;
 import com.kubar.itransition.model.User;
 
+import java.util.List;
+import java.util.Set;
+
 
 public interface LikeService {
 
     Like findById(Long id);
 
-    void Like(User user, Instruction instruction);
+    void changeRating(User user, Instruction instruction, int ratingValue);
 
-    void Dislike(User user, Instruction instruction);
+    Integer findAllLikes(List<Like>likes);
+
+    void delete(Like like);
+
+    int getUsersStateLike(User user, Instruction instruction);
+
 }

@@ -1,4 +1,4 @@
-package com.kubar.itransition.security.util;
+package com.kubar.itransition.utilities.security;
 
 import com.kubar.itransition.model.SocialMediaService;
 import com.kubar.itransition.model.User;
@@ -19,7 +19,6 @@ public class SecurityUtil {
     UserService userService;
 
     public void logInUser(User user) {
-        System.out.println("loginuser");
         UserDetailsDto userDetails = UserDetailsDto.getBuilder()
                 .id(user.getId())
                 .name(user.getName())
@@ -31,7 +30,6 @@ public class SecurityUtil {
     }
 
     public User createRegistrationUser(Connection<?> connection) {
-        System.out.println("createregistrationuser");
         User user = new User();
         if (connection != null) {
             UserProfile socialMediaProfile = connection.fetchUserProfile();
@@ -50,5 +48,19 @@ public class SecurityUtil {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public Boolean isForeignAccount(String userid){
+        try {
+            if (userid.equals(getUserFromContext().getId())){
+                return false;
+            }else {
+                return true;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+
     }
 }

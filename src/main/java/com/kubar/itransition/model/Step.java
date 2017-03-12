@@ -10,7 +10,7 @@ import java.util.List;
 @Entity
 @Indexed
 @Table(name = "steps")
-public class Step implements Serializable{
+public class Step implements Serializable {
 
     private Long id;
     private String name;
@@ -18,9 +18,10 @@ public class Step implements Serializable{
     private Integer position;
     private String description;
     private Instruction instruction;
-    private List<Comment> comments=new ArrayList<>();
+    private List<Comment> comments = new ArrayList<>();
 
-    public Step(){}
+    public Step() {
+    }
 
     public Step(Long id, String name, String imageUrl, Integer stepPosition, String description, Instruction instruction) {
         this.id = id;
@@ -91,7 +92,7 @@ public class Step implements Serializable{
         this.instruction = instruction;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "step", fetch = FetchType.LAZY)
     @IndexedEmbedded
     public List<Comment> getComments() {
         return comments;
@@ -114,5 +115,29 @@ public class Step implements Serializable{
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
+        Step step1 = (Step) o;
+
+        if (id != null ? !id.equals(step1.id) : step1.id != null) return false;
+        if (name != null ? !name.equals(step1.name) : step1.name != null) return false;
+        if (imageUrl != null ? !imageUrl.equals(step1.imageUrl) : step1.imageUrl != null) return false;
+        if (position != null ? !position.equals(step1.position) : step1.position != null) return false;
+        if (description != null ? !description.equals(step1.description) : step1.description != null) return false;
+        return instruction != null ? instruction.equals(step1.instruction) : step1.instruction == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (imageUrl != null ? imageUrl.hashCode() : 0);
+        result = 31 * result + (position != null ? position.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + (instruction != null ? instruction.hashCode() : 0);
+        return result;
+    }
 }

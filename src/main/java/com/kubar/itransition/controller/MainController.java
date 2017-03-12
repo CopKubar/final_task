@@ -1,15 +1,11 @@
 package com.kubar.itransition.controller;
 
-import com.kubar.itransition.dao.BookDao;
 import com.kubar.itransition.dto.UserDetailsDto;
-import com.kubar.itransition.model.Category;
-import com.kubar.itransition.model.Instruction;
-import com.kubar.itransition.model.Step;
-import com.kubar.itransition.model.User;
-import com.kubar.itransition.security.util.SecurityUtil;
-import com.kubar.itransition.service.CategoryService;
-import com.kubar.itransition.service.InstructionService;
-import com.kubar.itransition.service.UserService;
+import com.kubar.itransition.model.*;
+import com.kubar.itransition.utilities.forModels.InstructionUtil;
+import com.kubar.itransition.utilities.forModels.StepUtil;
+import com.kubar.itransition.utilities.security.SecurityUtil;
+import com.kubar.itransition.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,61 +20,86 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import java.util.HashMap;
 import java.util.List;
 
 @Controller
 public class MainController {
 
-    @Autowired
     private UserService userService;
 
-    @Autowired
     private UsersConnectionRepository usersConnectionRepository;
 
-    @Autowired
     private ConnectionFactoryLocator connectionFactoryLocator;
 
-    @Autowired
     private SecurityUtil securityUtil;
 
-    @Autowired
-    private BookDao bookDao;
-
-    @Autowired
     private CategoryService categoryService;
 
-    @Autowired
     private InstructionService instructionService;
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
-    public ModelAndView showStartPage(HttpSession session) throws Exception {
-        //bookDao.indexBooks();
-        ModelAndView modelAndView = new ModelAndView();
-        if (securityUtil.getUserFromContext()!=null){
-            modelAndView.addObject("user", securityUtil.getUserFromContext());
-        }
-        return new ModelAndView("index","categories",categoryService.getAll());
+    private LikeService likeService;
+
+    private StepService stepService;
+
+    private StepUtil stepUtil;
+
+    private CommentService commentService;
+
+    private InstructionUtil instructionUtil;
+
+    @Autowired
+    public MainController(UserService userService, UsersConnectionRepository usersConnectionRepository, ConnectionFactoryLocator connectionFactoryLocator, SecurityUtil securityUtil, CategoryService categoryService, InstructionService instructionService, LikeService likeService, StepService stepService, StepUtil stepUtil, CommentService commentService, InstructionUtil instructionUtil) {
+        this.userService = userService;
+        this.usersConnectionRepository = usersConnectionRepository;
+        this.connectionFactoryLocator = connectionFactoryLocator;
+        this.securityUtil = securityUtil;
+        this.categoryService = categoryService;
+        this.instructionService = instructionService;
+        this.likeService = likeService;
+        this.stepService = stepService;
+        this.stepUtil = stepUtil;
+        this.commentService = commentService;
+        this.instructionUtil = instructionUtil;
     }
 
-    @RequestMapping(value = "/profile", method = RequestMethod.GET)
-    public ModelAndView AddInstruction() {
-        ModelAndView modelAndView=new ModelAndView("/profile");
-        modelAndView.addObject("categories", categoryService.getAll());
-        modelAndView.addObject("instruction", new Instruction());
+    @RequestMapping(value = {"/","/index"}, method = RequestMethod.GET)
+    public ModelAndView showStartPage() throws Exception {
+        ModelAndView modelAndView = new ModelAndView("index","categories",categoryService.getAll());
+        if (!SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser")){
+            modelAndView.addObject("user", securityUtil.getUserFromContext());
+        }
+        modelAndView.addObject("popularInstructions", instructionUtil.get12MostPopularInstruction(instructionService.findAll()));
+        modelAndView.addObject("newInstructions", instructionUtil.get12MostNewestInstruction(instructionService.findAll()));
         return modelAndView;
     }
 
+    @RequestMapping(value = "/accessDenied", method = RequestMethod.GET)
+    public ModelAndView accessDenied(){
+        return new ModelAndView("error404");
+    }
+
+    @RequestMapping(value = "/ban/user/{userId}", method = RequestMethod.POST)
+    public ModelAndView banUser(@PathVariable String userId){
+        userService.setBanToUser(userService.findById(userId));
+        return new ModelAndView(new RedirectView("/profile/"+userId));
+    }
+
+    @RequestMapping(value = "/set/admin/{userId}", method = RequestMethod.POST)
+    public ModelAndView setAdminRole(@PathVariable String userId){
+        userService.setRoleAdminToUser(userService.findById(userId));
+        return new ModelAndView(new RedirectView("/profile/"+userId));
+    }
+
     @RequestMapping(value = "/profile/{userid}", method = RequestMethod.GET)
-    public ModelAndView profileForAdmin(@PathVariable("userid") String userid){
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName("profile");
-        mav.addObject("categories", categoryService.getAll());
-        mav.addObject("user", userService.findById(userid));
-        return mav;
+    public ModelAndView AddInstruction(@PathVariable String userid) {
+        ModelAndView modelAndView=new ModelAndView("profile");
+        modelAndView.addObject("categories", categoryService.getAll());
+        modelAndView.addObject("user", userService.findById(userid));
+        modelAndView.addObject("foreignAccount", securityUtil.isForeignAccount(userid));
+        return modelAndView;
     }
 
     @RequestMapping(value = "/signup", method = RequestMethod.GET)
@@ -104,24 +125,17 @@ public class MainController {
         return new ModelAndView(new RedirectView("/"));
     }
 
-    @RequestMapping(value = "/search", method = RequestMethod.GET)
-    public ModelAndView searchPage() {
-        System.out.println(securityUtil.getUserFromContext().getName()+" "+securityUtil.getUserFromContext().getId());
-        ModelAndView mav = new ModelAndView("search");
-        return mav;
-    }
-
     @RequestMapping(value = "/doSearch", method = RequestMethod.GET)
     public ModelAndView search(@RequestParam("searchText") String searchText
     ) throws Exception
     {
         try {
             System.out.println("Зашел");
-            List<Step> allFound = bookDao.searchForBook(searchText);
+            List<Step> allFound = stepService.searchLucene(searchText);
 
             System.out.println("Найдено "+allFound.size()+" записей");
 
-            ModelAndView mav = new ModelAndView("foundBooks", "foundBooks", allFound.size());
+            ModelAndView mav = new ModelAndView("searchOutput", "foundBooks", instructionUtil.getInstructionSearch(stepService.searchLucene(searchText)));
             return mav;
         }catch (Exception e){
             System.out.println(e.getMessage());
@@ -143,31 +157,100 @@ public class MainController {
         instruction.setCategory(categoryService.findByName(category));
         instruction.setImageUrl(image);
         instruction.setUser(userService.findById(userDetailsDto.getId()));
-        instructionService.save(instruction);
+        System.out.println("дошло");
+        try{
+            instructionService.save(instruction);
+            stepService.indexSteps();
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
         return new ModelAndView("addStep","instruction",instruction);
     }
+
+    @RequestMapping(value = "/regroup", method = RequestMethod.POST)
+    @ResponseBody
+    public void regroupStepList(@RequestParam Long stepId,@RequestParam Integer newPosition) {
+        stepUtil.changePositions(stepId, newPosition);
+    }
+
     @RequestMapping(value = "/editStep", method = RequestMethod.POST)
     @ResponseBody
-    public void editStep( @RequestParam String id, @RequestParam String instruction_id, @RequestParam String title,
-                          @RequestParam String description, @RequestParam String img) {
-        System.out.println(title);
+    public String addOrEditStep(@RequestParam Long id, @RequestParam Long instruction_id, @RequestParam String title,
+                            @RequestParam String description, @RequestParam String img) throws Exception {
+        String response="";
+//TODO check user permission
+        Step step=new Step();
+        Instruction instruction=instructionService.findById(instruction_id);
         System.out.println(id);
-        System.out.println(instruction_id);
-        System.out.println(description);
-        System.out.println(img);
-// UserDetailsDto userDetailsDto =(UserDetailsDto) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-// instructionRepository.save(new Instruction(title,youtubeUrl, userService.findById(userDetailsDto.getId()),categoryRepository.findOne(category)));
-//return "hooray";
+        step.setId(id);
+        step.setInstruction(instruction);
+        step.setDescription(description);
+        step.setImageUrl(img);
+        step.setName(title);
+        if (instruction.getSteps().size() == 0) {
+                step.setPosition(0);
+        }else {
+            step.setPosition(instruction.getSteps().size());
+        }
+        stepService.save(step);
+        response=response+"{\"step_id\" : "+step.getId()+"}";
+        stepService.indexSteps();
+        return response;
     }
 
-    @RequestMapping(value = "/getAllUsers", method = RequestMethod.GET)
-    public ModelAndView getAllUsers(){
-        return new ModelAndView("users", "users", userService.findAll());
+
+        @RequestMapping(value = "/addcomment", method = RequestMethod.POST)
+    public @ResponseBody
+        HashMap<String, Object> processAJAXRequest(
+            @RequestParam String text,
+            @RequestParam String stepId) throws Exception {
+            System.out.println("начало метода");
+        Step step = stepService.findById(Long.parseLong(stepId));
+        Comment comment = new Comment();
+        comment.setStep(step);
+        comment.setText(text);
+        comment.setUser(securityUtil.getUserFromContext());
+        commentService.save(comment);
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("comment", text);
+        map.put("username", comment.getUser().getName());
+        map.put("userid", comment.getUser().getId());
+        stepService.indexSteps();
+        return map;
     }
 
-    private List<Category> getAllCategories(){
-        return categoryService.getAll();
+    @RequestMapping(value = "/showinstruction/{instructionid}", method = RequestMethod.GET)
+    public ModelAndView showInstructionPage(@PathVariable("instructionid") Long instructionId) throws Exception {
+        Instruction instruction=instructionService.findById(instructionId);
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("instructionView");
+        modelAndView.addObject("categories", categoryService.getAll());
+        modelAndView.addObject("instruction", instruction);
+        modelAndView.addObject("rating", likeService.findAllLikes(instruction.getLikes()));
+        modelAndView.addObject("usersLikeState", likeService.getUsersStateLike(instruction.getUser(), instruction));
+        modelAndView.addObject("user", instruction.getUser());
+        modelAndView.addObject("category", instruction.getCategory());
+        modelAndView.addObject("step", instruction.getSteps().get(0));
+        modelAndView.addObject("numberOfSteps", instruction.getSteps().size());
+        modelAndView.addObject("comments", instruction.getSteps().get(0).getComments());
+        return modelAndView;
+    }
+
+    @RequestMapping(value = "/get_step", method = RequestMethod.POST)
+    @ResponseBody
+    public String getStep(@RequestParam Integer step_number, @RequestParam Long instruction_id) {
+        Instruction instruction=instructionService.findById(instruction_id);
+        Step step = stepUtil.getSortedListWithSteps(instruction.getSteps()).get(step_number);
+        String response=stepUtil.generatedJson(step);
+        return response;
+    }
+    @RequestMapping(value = "/like", method = RequestMethod.GET)
+    @ResponseBody
+    public void getLikeOrDislike(@RequestParam Long instructionId,@RequestParam int ratingValue) {
+        System.out.println("в контроллере");
+        Instruction instruction = instructionService.findById(instructionId);
+        User user = securityUtil.getUserFromContext();
+        likeService.changeRating(user, instruction, ratingValue);
     }
 
 }

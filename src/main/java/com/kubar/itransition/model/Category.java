@@ -29,7 +29,7 @@ public class Category implements Serializable{
         this.name = name;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "category", fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.REMOVE,mappedBy = "category", fetch = FetchType.LAZY)
     public List<Instruction> getInstructions() {
         return instructions;
     }
@@ -45,5 +45,18 @@ public class Category implements Serializable{
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
+        Category category = (Category) o;
+
+        return name != null ? name.equals(category.name) : category.name == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return name != null ? name.hashCode() : 0;
+    }
 }

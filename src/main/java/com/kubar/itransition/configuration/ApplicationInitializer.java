@@ -37,7 +37,6 @@ public class ApplicationInitializer implements WebApplicationInitializer {
         security.addMappingForUrlPatterns(dispatcherTypes, true, "/*");
 
         FilterRegistration.Dynamic filterOpenSession = servletContext.addFilter("openEntityManagerInViewFilter", OpenSessionInViewFilter.class);
-        filterOpenSession.setInitParameter("singleSession", "true");
         filterOpenSession.addMappingForServletNames(null, true, "dispatcher");
 
         servletContext.addListener(new ContextLoaderListener(rootContext));

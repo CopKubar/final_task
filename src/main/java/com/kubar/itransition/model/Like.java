@@ -9,12 +9,12 @@ public class Like implements Serializable{
 
     private Long id;
     private User user;
-    private boolean state;
+    private int state;
     private Instruction instruction;
 
     public Like(){}
 
-    public Like(User user, boolean state, Instruction instruction) {
+    public Like(User user, int state, Instruction instruction) {
         this.user = user;
         this.state = state;
         this.instruction = instruction;
@@ -42,11 +42,11 @@ public class Like implements Serializable{
     }
 
     @Column(name = "state")
-    public boolean getState() {
+    public int getState() {
         return state;
     }
 
-    public void setState(boolean state) {
+    public void setState(int state) {
         this.state = state;
     }
 
@@ -70,5 +70,25 @@ public class Like implements Serializable{
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
+        Like like = (Like) o;
+
+        if (state != like.state) return false;
+        if (id != null ? !id.equals(like.id) : like.id != null) return false;
+        if (user != null ? !user.equals(like.user) : like.user != null) return false;
+        return instruction != null ? instruction.equals(like.instruction) : like.instruction == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (user != null ? user.hashCode() : 0);
+        result = 31 * result + state;
+        result = 31 * result + (instruction != null ? instruction.hashCode() : 0);
+        return result;
+    }
 }

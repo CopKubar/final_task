@@ -17,11 +17,6 @@
         </form>
 
         <ul class="nav navbar-nav navbar-right">
-            <sec:authorize access="hasRole('ROLE_ADMIN')">
-                <li role="presentation" class="dropdown">
-                    <a href="/getAllUsers">All Users</a>
-                </li>
-            </sec:authorize>
             <li role="presentation" class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                     <spring:message code="main.categories"/> <span class="caret"></span>
@@ -51,12 +46,12 @@
                     <spring:message code="main.theme"/><span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
-                    <li><a href="<c:url value="/?mytheme=theme1"/>"><spring:message code="theme.light"/></a></li>
-                    <li><a href="<c:url value="/?mytheme=theme2"/>"><spring:message code="theme.dark"/></a></li>
+                    <li><a href="<c:url value="${pageContext.request.contextPath}/?mytheme=theme1"/>"><spring:message code="theme.light"/></a></li>
+                    <li><a href="<c:url value="${pageContext.request.contextPath}/?mytheme=theme2"/>"><spring:message code="theme.dark"/></a></li>
                 </ul>
             </li>
             <li class="divider"></li>
-            <sec:authorize access="hasRole('ROLE_USER')">
+            <sec:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_USER','ROLE_BANNED')">
                 <li role="presentation" class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                         <spring:message code="main.signed"/> <sec:authentication property="principal.name"/><span class="caret"></span>
@@ -92,9 +87,9 @@
                 <div id='social-icons-conatainer'>
                     <%--<div class='modal-body-right'>--%>
                     <div class="modal-social-icons">
-                        <a href='${pageContext.request.contextPath}/auth/facebook' class="btn btn-default facebook"> <i class="fa fa-facebook modal-icons"></i></a>
-                        <a href='${pageContext.request.contextPath}/auth/twitter' class="btn btn-default twitter"> <i class="fa fa-twitter modal-icons"></i></a>
-                        <a href='${pageContext.request.contextPath}/auth/vkontakte' class="btn btn-default vk"> <i class="fa fa-vk modal-icons"></i></a>
+                        <a href='${pageContext.request.contextPath}/auth/facebook' class="btn btn-default facebook">  <i class="fa fa-facebook modal-icons"> <spring:message code="user.login.with.facebook"/></i></a>
+                        <a href='${pageContext.request.contextPath}/auth/twitter' class="btn btn-default twitter"> <i class="fa fa-twitter modal-icons"> <spring:message code="user.login.with.twitter"/></i></a>
+                        <a href='${pageContext.request.contextPath}/auth/vkontakte' class="btn btn-default vk"> <i class="fa fa-vk modal-icons"> <spring:message code="user.login.with.vkontakte"/></i></a>
                     </div>
                     <%--</div>--%>
                 </div>
@@ -106,70 +101,3 @@
         </div>
     </div>
 </div>
-<%--<div class="navbar navbar-inverse navbar-fixed-top">--%>
-    <%--<div class="container-fluid">--%>
-        <%--<div class="navbar-header">--%>
-            <%--<a class="navbar-brand" href="#">--%>
-                <%--<img alt="Brand" src="...">--%>
-            <%--</a>--%>
-        <%--</div>--%>
-        <%--<form class="navbar-form navbar-left" action="/doSearch" role="search">--%>
-            <%--<div class="form-group">--%>
-                <%--<input type="text" name="searchText" placeholder="<spring:message code="main.search"/>"/>--%>
-            <%--</div>--%>
-            <%--<button type="submit" class="btn btn-default"><spring:message code="main.search"/></button>--%>
-        <%--</form>--%>
-
-        <%--<ul class="nav navbar-nav navbar-right">--%>
-            <%--<li role="presentation" class="dropdown">--%>
-                <%--<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">--%>
-                    <%--<spring:message code="main.categories"/> <span class="caret"></span>--%>
-                <%--</a>--%>
-                <%--<ul class="dropdown-menu">--%>
-                    <%--<li><a href="#"> punct 2.1</a></li>--%>
-                    <%--<li><a href="#"> punct 2.2</a></li>--%>
-                    <%--<li><a href="#"> punct 2.3</a></li>--%>
-                <%--</ul>--%>
-            <%--</li>--%>
-            <%--<li role="presentation" class="dropdown">--%>
-                <%--<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">--%>
-                    <%--<spring:message code="main.lang"/><span class="caret"></span>--%>
-                <%--</a>--%>
-                <%--<ul class="dropdown-menu">--%>
-                    <%--<li><a href="<c:url value="?lang=ru"/>">--%>
-                        <%--<span class="badge"><spring:message code="lang.ru"/></span>--%>
-                    <%--</a></li>--%>
-                    <%--<li><a href="<c:url value="?lang=en"/>">--%>
-                        <%--<span class="badge"><spring:message code="lang.en"/></span>--%>
-                    <%--</a></li>--%>
-                <%--</ul>--%>
-            <%--</li>--%>
-            <%--<li role="presentation" class="dropdown">--%>
-                <%--<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">--%>
-                    <%--<spring:message code="main.theme"/><span class="caret"></span>--%>
-                <%--</a>--%>
-                <%--<ul class="dropdown-menu">--%>
-                    <%--<li><a href="#"><spring:message code="theme.dark"/></a></li>--%>
-                    <%--<li><a href="#"><spring:message code="theme.light"/></a></li>--%>
-                <%--</ul>--%>
-            <%--</li>--%>
-            <%--<li class="divider"></li>--%>
-            <%--<sec:authorize access="hasRole('ROLE_USER')">--%>
-            <%--<li role="presentation" class="dropdown">--%>
-                <%--<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">--%>
-                    <%--<spring:message code="main.signed"/> <sec:authentication property="principal.name"/><span class="caret"></span>--%>
-                <%--</a>--%>
-                <%--<ul class="dropdown-menu">--%>
-                    <%--<li><a href="${pageContext.request.contextPath}/logout"><spring:message code="user.logout"/></a></li>--%>
-                    <%--<li><a href="${pageContext.request.contextPath}/profile"><spring:message code="main.profile"/></a></li>--%>
-                    <%--</li>--%>
-                    <%--</sec:authorize>--%>
-                    <%--<sec:authorize access="isAnonymous()">--%>
-                        <%--<li><a href="${pageContext.request.contextPath}/auth/vkontakte">VK</a></li>--%>
-                        <%--<li><a href="${pageContext.request.contextPath}/auth/facebook">FB</a></li>--%>
-                        <%--<li><a href="${pageContext.request.contextPath}/auth/twitter">TW</a></li>--%>
-                    <%--</sec:authorize>--%>
-                <%--</ul>--%>
-
-    <%--</div>--%>
-<%--</div>--%>

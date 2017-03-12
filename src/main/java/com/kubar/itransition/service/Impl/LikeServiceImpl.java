@@ -11,7 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Service
@@ -21,67 +22,76 @@ public class LikeServiceImpl implements LikeService{
     @Autowired
     private LikeDao likeDao;
 
-    @Autowired
-    private UserDao userDao;
-
-    @Autowired
-    private InstructionDao instructionDao;
-
     @Override
     public Like findById(Long id) {
         return likeDao.findById(id);
     }
 
     @Override
-    public void Like(User user, Instruction instruction) {
-        boolean changed=false;
-        Set<Like>likes=user.getLikes();
-        for (Like like: likes){
-            if (instruction.getLikes().contains(like)){
-                if (like.getState()){
-                    likeDao.delete(like);
-                    changed=true;
-                }else {
-                    like.setState(true);
-                    likeDao.saveAndFlush(like);
-                    changed=true;
+    public void changeRating(User user, Instruction instruction, int ratingValue) {
+        System.out.println("в методе");
+        Like like=null;
+
+        List<Like>likes=user.getLikes();
+        for (Like like1: likes){
+            for (Like like2: instruction.getLikes()){
+                if (Objects.equals(like1.getId(), like2.getId())){
+                    like=like2;
                 }
             }
         }
-        if (!changed){
-            persistAllAboutLike(user, true, instruction);
+
+        if (like!=null){
+            if (ratingValue==0){
+                likeDao.delete(like);
+            }
+            else if (ratingValue==1){
+                like.setState(1);
+                likeDao.saveAndFlush(like);
+            }else if (ratingValue==-1){
+                like.setState(-1);
+                likeDao.saveAndFlush(like);
+            }
+        }else {
+            if (ratingValue==1){
+                likeDao.saveAndFlush(new Like(user, 1, instruction));
+            }else if (ratingValue==-1){
+                likeDao.saveAndFlush(new Like(user, -1, instruction));
+            }
         }
+        System.out.println("конец метода");
     }
 
     @Override
-    public void Dislike(User user, Instruction instruction) {
-        boolean changed=false;
-        Set<Like>likes=user.getLikes();
+    public Integer findAllLikes(List<Like> likes) {
+        return getAllLikeOrDislike(likes);
+    }
+
+    @Override
+    public void delete(Like like) {
+        likeDao.delete(like);
+    }
+    private Integer getAllLikeOrDislike(List<Like> likes){
+        int rating=0;
         for (Like like: likes){
-            if (instruction.getLikes().contains(like)){
-                if (like.getState()){
-                    like.setState(false);
-                    likeDao.saveAndFlush(like);
-                    changed=true;
-                }else {
-                    likeDao.delete(like);
-                    changed=true;
+            rating+=like.getState();
+        }
+        return rating;
+    }
+
+    @Override
+    public int getUsersStateLike(User user, Instruction instruction){
+        List<Like>likes=user.getLikes();
+        for (Like like: likes){
+            for (Like like1: instruction.getLikes()){
+                if(Objects.equals(like.getId(), like1.getId())){
+                    System.out.println(like.getState());
+                    return like.getState();
                 }
             }
         }
-        if (!changed){
-            persistAllAboutLike(user, false, instruction);
-        }
-    }
-
-    private void persistAllAboutLike(User user, boolean state, Instruction instruction){
-        Like like=likeDao.saveAndFlush(new Like(user, state, instruction));
-        Set<Like>userLikes=new HashSet<>();
-        userLikes.add(like);
-        user.setLikes(userLikes);
-        userDao.saveAndFlush(user);
-        instruction.setLikes(userLikes);
-        instructionDao.saveAndFlush(instruction);
+        System.out.println(0);
+        return 0;
     }
 
 

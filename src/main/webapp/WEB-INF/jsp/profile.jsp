@@ -22,22 +22,36 @@
 <div class="container">
     <div class="row border_bottom">
         <sec:authorize access="hasRole('ROLE_ADMIN')">
-            <form action="/banForUser/" method="post">
-                <input type="hidden" >
-            </form>
+            <c:choose>
+                <c:when test="${foreignAccount eq true}">
+                    <div class="col-xs-12 col-md-12 col-lg-12 col-md-12">
+                        <form action="/ban/user/${user.id}" method="post">
+                            <input type="hidden" name="${_csrf.parameterName}"
+                                   value="${_csrf.token}" />
+                            <input type="submit" value="Забанить">
+                        </form>
+                    </div>
+                    <div class="col-xs-12 col-md-12 col-lg-12 col-md-12">
+                        <form action="/set/admin/${user.id}" method="post">
+                            <input type="hidden" name="${_csrf.parameterName}"
+                                   value="${_csrf.token}" />
+                            <input type="submit" value="Сделать админом">
+                        </form>
+                    </div>
+                </c:when>
+            </c:choose>
         </sec:authorize>
 
 
         <div class="col-xs-6 col-md-6 col-lg-8 col-md-8 position_name">
-            <%--${user_name}--%>
+
             <sec:authorize access="hasRole('ROLE_USER')">
-                <sec:authentication property="principal.name"/>
+                ${user.name}
             </sec:authorize>
             <sec:authorize access="isAnonymous()">
                 I am Nobody
             </sec:authorize>
 
-            <sec:authorize access="h"
         </div>
         <div class="col-xs-6 col-md-6 col-lg-4 col-md-4 user_img">
             <img src="https://s.pinimg.com/images/user/default_280.png" alt="User Photo">
@@ -45,9 +59,10 @@
         </div>
     </div>
 
-    <sec:authorize access="hasRole('ROLE_USER')">
+    <sec:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_USER')">
     <div class="container-fluid">
         <div class="row row-flex ">
+            <c:if test="${foreignAccount eq false}">
             <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3" data-toggle="modal" href='#new_instruction'>
                 <div class="thumbnail">
                     <img src="/static/img/add_blue.png" alt="+">
@@ -56,6 +71,7 @@
                     <h3>Create Instruction</h3>
                 </div>
             </div>
+            </c:if>
             <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3">
                 <div class="thumbnail">
                     <a href="#myModal" data-toggle="modal">
@@ -167,10 +183,11 @@
         acceptedFiles: '.jpg,.png,.jpeg,.gif',
         url: 'https://api.cloudinary.com/v1_1/depejwdfb/image/upload'
     });
-    var prefix = "user_id"+ "_"+"instruction_id"+"_"
+
+    var prefix = "user_id"+ "_"+"instruction_id"+"_";
     myDropzone.on('sending', function (file, xhr, formData) {
         console.log("sending")
-        var fileName = prefix + file.name;
+        var fileName =  prefix + file.name ;
         //var fileName =file.name;
         //oadImage(fileName, '#img_url');
         formData.append('api_key', 338123839493786);
@@ -184,11 +201,11 @@
     });
     myDropzone.on("complete", function (file) {
         console.log("complete");
-        var fileName = prefix + file.name;
+        var url = "http://res.cloudinary.com/depejwdfb/image/upload/c_pad,h_200/" + prefix + file.name + ".jpg";
         console.log(file.type);
-        console.log(fileName);
+        console.log(file);
         //var fileName =file.name;
-        loadImage(fileName, '#img_url');
+        loadImage(url, '#img_url');
     });
 
 
